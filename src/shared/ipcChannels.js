@@ -108,7 +108,8 @@ const IPC = {
   GET_AI_TOOL_CONFIG: 'get-ai-tool-config',
   AI_TOOL_CONFIG_DATA: 'ai-tool-config-data',
   SET_AI_TOOL: 'set-ai-tool',
-  AI_TOOL_CHANGED: 'ai-tool-changed'
+  AI_TOOL_CHANGED: 'ai-tool-changed',
+  GET_AI_TOOL_EXECUTABLE: 'get-ai-tool-executable'
 };
 
 module.exports = { IPC };

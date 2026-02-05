@@ -25,7 +25,9 @@ const AI_TOOLS = {
       help: '/help'
     },
     menuLabel: 'Claude Commands',
-    supportsPlugins: true
+    supportsPlugins: true,
+    // Claude Code natively reads CLAUDE.md, no wrapper needed
+    needsWrapper: false
   },
   codex: {
     id: 'codex',
@@ -39,7 +41,11 @@ const AI_TOOLS = {
       help: '/help'
     },
     menuLabel: 'Codex Commands',
-    supportsPlugins: false
+    supportsPlugins: false,
+    // Codex doesn't read instruction files, needs wrapper
+    needsWrapper: true,
+    wrapperName: 'codex',
+    promptFlag: '--prompt'
   }
 };
 
@@ -172,6 +178,11 @@ function setupIPC() {
   ipcMain.handle(IPC.SET_AI_TOOL, (event, toolId) => {
     return setActiveTool(toolId);
   });
+
+  ipcMain.handle(IPC.GET_AI_TOOL_EXECUTABLE, (event, { toolId, projectPath }) => {
+    const id = toolId || config.activeTool;
+    return getExecutableCommand(id, projectPath);
+  });
 }
 
 /**
@@ -189,6 +200,55 @@ function getStartCommand() {
   return getActiveTool().command;
 }
 
+/**
+ * Get all tools that require wrapper scripts
+ * @returns {Array} Array of tool configs that need wrappers
+ */
+function getToolsRequiringWrapper() {
+  const allTools = getAvailableTools();
+  return Object.values(allTools).filter(tool => tool.needsWrapper);
+}
+
+/**
+ * Get the executable command for a tool
+ * Returns wrapper path if exists in project, otherwise original command
+ * @param {string} toolId - Tool ID
+ * @param {string} projectPath - Path to the project
+ * @returns {string} Command to execute
+ */
+function getExecutableCommand(toolId, projectPath) {
+  const tools = getAvailableTools();
+  const tool = tools[toolId] || tools.claude;
+
+  // If tool doesn't need wrapper, return original command
+  if (!tool.needsWrapper) {
+    return tool.command;
+  }
+
+  // Check if wrapper exists in project
+  if (projectPath) {
+    const { FRAME_DIR, FRAME_BIN_DIR } = require('../shared/frameConstants');
+    const wrapperPath = path.join(projectPath, FRAME_DIR, FRAME_BIN_DIR, tool.wrapperName || tool.command);
+
+    if (fs.existsSync(wrapperPath)) {
+      return wrapperPath;
+    }
+  }
+
+  // Fallback to original command
+  return tool.command;
+}
+
+/**
+ * Get executable command for currently active tool
+ * @param {string} projectPath - Path to the project
+ * @returns {string} Command to execute
+ */
+function getActiveToolCommand(projectPath) {
+  const tool = getActiveTool();
+  return getExecutableCommand(tool.id, projectPath);
+}
+
 module.exports = {
   init,
   getAvailableTools,
@@ -197,6 +257,9 @@ module.exports = {
   getConfig,
   getCommand,
   getStartCommand,
+  getToolsRequiringWrapper,
+  getExecutableCommand,
+  getActiveToolCommand,
   addCustomTool,
   removeCustomTool,
   AI_TOOLS

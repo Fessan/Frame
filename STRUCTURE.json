@@ -167,11 +167,12 @@
         "electron",
         "path",
         "fs",
-        "shared/ipcChannels"
+        "shared/ipcChannels",
+        "pty"
       ],
       "functions": {
         "init": {
-          "line": 19,
+          "line": 20,
           "params": [
             "window",
             "app",
@@ -180,37 +181,37 @@
           "purpose": "Initialize menu module"
         },
         "getMenuTemplate": {
-          "line": 28,
+          "line": 29,
           "purpose": "Get menu template based on active AI tool"
         },
         "buildAICommandsSubmenu": {
-          "line": 93,
+          "line": 94,
           "params": [
             "tool"
           ],
           "purpose": "Build AI commands submenu based on active tool"
         },
         "buildToolSwitcherSubmenu": {
-          "line": 181,
+          "line": 186,
           "purpose": "Build tool switcher submenu"
         },
         "sendCommand": {
-          "line": 200,
+          "line": 205,
           "params": [
             "command"
           ],
           "purpose": "Send command to terminal"
         },
         "toggleHistoryPanel": {
-          "line": 209,
+          "line": 214,
           "purpose": "Toggle history panel"
         },
         "openHistoryFile": {
-          "line": 218,
+          "line": 223,
           "purpose": "Open history file in default editor"
         },
         "createMenu": {
-          "line": 232,
+          "line": 237,
           "purpose": "Create and set application menu"
         }
       },
@@ -492,32 +493,33 @@
         "shared/ipcChannels",
         "shared/frameConstants",
         "shared/frameTemplates",
-        "workspace"
+        "workspace",
+        "aiToolManager"
       ],
       "functions": {
         "init": {
-          "line": 19,
+          "line": 20,
           "params": [
             "window"
           ],
           "purpose": "Initialize frame project module"
         },
         "isFrameProject": {
-          "line": 26,
+          "line": 27,
           "params": [
             "projectPath"
           ],
           "purpose": "Check if a project is a Frame project"
         },
         "getFrameConfig": {
-          "line": 34,
+          "line": 35,
           "params": [
             "projectPath"
           ],
           "purpose": "Get Frame config from project"
         },
         "createFileIfNotExists": {
-          "line": 47,
+          "line": 48,
           "params": [
             "filePath",
             "content"
@@ -525,29 +527,36 @@
           "purpose": "Create file if it doesn't exist"
         },
         "createSymlinkSafe": {
-          "line": 64,
+          "line": 65,
           "params": [
             "target",
             "linkPath"
           ],
           "purpose": "Create a symlink safely with Windows fallback"
         },
+        "createWrapperScripts": {
+          "line": 107,
+          "params": [
+            "projectPath"
+          ],
+          "purpose": "Create wrapper scripts for AI tools that need them"
+        },
         "checkExistingFrameFiles": {
-          "line": 105,
+          "line": 144,
           "params": [
             "projectPath"
           ],
           "purpose": "Check which Frame files already exist in the project"
         },
         "showInitializeConfirmation": {
-          "line": 129,
+          "line": 169,
           "params": [
             "projectPath"
           ],
           "purpose": "Show confirmation dialog before initializing Frame project"
         },
         "initializeFrameProject": {
-          "line": 164,
+          "line": 212,
           "params": [
             "projectPath",
             "projectName"
@@ -555,7 +564,7 @@
           "purpose": "Initialize a project as Frame project"
         },
         "setupIPC": {
-          "line": 224,
+          "line": 275,
           "params": [
             "ipcMain"
           ],
@@ -1580,6 +1589,7 @@
         "WORKSPACE_DIR",
         "WORKSPACE_FILE",
         "FRAME_FILES",
+        "FRAME_BIN_DIR",
         "FRAME_VERSION"
       ],
       "depends": [],
@@ -1594,7 +1604,9 @@
         "getNotesTemplate",
         "getTasksTemplate",
         "getQuickstartTemplate",
-        "getFrameConfigTemplate"
+        "getFrameConfigTemplate",
+        "getWrapperScriptTemplate",
+        "getGenericWrapperTemplate"
       ],
       "depends": [],
       "functions": {
@@ -1647,6 +1659,23 @@
             "projectName"
           ],
           "purpose": ".frame/config.json template"
+        },
+        "getWrapperScriptTemplate": {
+          "line": 387,
+          "params": [
+            "toolCommand",
+            "toolName"
+          ],
+          "purpose": "This wrapper injects project context by prompting the tool to read AGENTS.md"
+        },
+        "getGenericWrapperTemplate": {
+          "line": 416,
+          "params": [
+            "toolCommand",
+            "toolName",
+            "promptFlag = '--prompt'"
+          ],
+          "purpose": "Generic wrapper template for custom AI tools"
         }
       }
     },
@@ -3076,6 +3105,9 @@
         "getConfig",
         "getCommand",
         "getStartCommand",
+        "getToolsRequiringWrapper",
+        "getExecutableCommand",
+        "getActiveToolCommand",
         "addCustomTool",
         "removeCustomTool",
         "AI_TOOLS"
@@ -3084,11 +3116,12 @@
         "electron",
         "fs",
         "path",
-        "shared/ipcChannels"
+        "shared/ipcChannels",
+        "shared/frameConstants"
       ],
       "functions": {
         "init": {
-          "line": 55,
+          "line": 61,
           "params": [
             "window",
             "app"
@@ -3096,66 +3129,86 @@
           "purpose": "Initialize the AI Tool Manager"
         },
         "loadConfig": {
-          "line": 65,
+          "line": 71,
           "purpose": "Load configuration from file"
         },
         "saveConfig": {
-          "line": 80,
+          "line": 86,
           "purpose": "Save configuration to file"
         },
         "getAvailableTools": {
-          "line": 91,
+          "line": 97,
           "purpose": "Get all available AI tools"
         },
         "getActiveTool": {
-          "line": 98,
+          "line": 104,
           "purpose": "Get the currently active tool"
         },
         "setActiveTool": {
-          "line": 106,
+          "line": 112,
           "params": [
             "toolId"
           ],
           "purpose": "Set the active AI tool"
         },
         "getConfig": {
-          "line": 125,
+          "line": 131,
           "purpose": "Get full configuration for renderer"
         },
         "addCustomTool": {
-          "line": 135,
+          "line": 141,
           "params": [
             "tool"
           ],
           "purpose": "Add a custom AI tool"
         },
         "removeCustomTool": {
-          "line": 152,
+          "line": 158,
           "params": [
             "toolId"
           ],
           "purpose": "Remove a custom AI tool"
         },
         "setupIPC": {
-          "line": 167,
+          "line": 173,
           "purpose": "Setup IPC handlers"
         },
         "getCommand": {
-          "line": 180,
+          "line": 191,
           "params": [
             "action"
           ],
           "purpose": "Get command for specific action"
         },
         "getStartCommand": {
-          "line": 188,
+          "line": 199,
           "purpose": "Get the start command for active tool"
+        },
+        "getToolsRequiringWrapper": {
+          "line": 207,
+          "purpose": "Get all tools that require wrapper scripts"
+        },
+        "getExecutableCommand": {
+          "line": 219,
+          "params": [
+            "toolId",
+            "projectPath"
+          ],
+          "purpose": "Returns wrapper path if exists in project, otherwise original command"
+        },
+        "getActiveToolCommand": {
+          "line": 247,
+          "params": [
+            "projectPath"
+          ],
+          "purpose": "Get executable command for currently active tool"
         }
       },
       "ipc": {
         "listens": [
           "GET_AI_TOOL_CONFIG",
-          "SET_AI_TOOL"
+          "SET_AI_TOOL",
+          "GET_AI_TOOL_EXECUTABLE"
         ],
         "emits": [
           "AI_TOOL_CHANGED"
@@ -3169,6 +3222,7 @@
         "init",
         "getCurrentTool",
         "getStartCommand",
+        "getExecutableCommand",
         "getCommand",
         "supportsFeature"
       ],
@@ -3197,18 +3251,25 @@
           "purpose": "Get the current active tool"
         },
         "getStartCommand": {
-          "line": 105,
+          "line": 106,
           "purpose": "Get the start command for current tool"
         },
+        "getExecutableCommand": {
+          "line": 115,
+          "params": [
+            "projectPath"
+          ],
+          "purpose": "Get the executable command for current tool (uses wrapper if available)"
+        },
         "getCommand": {
-          "line": 112,
+          "line": 129,
           "params": [
             "action"
           ],
           "purpose": "Get a specific command for current tool"
         },
         "supportsFeature": {
-          "line": 120,
+          "line": 137,
           "params": [
             "feature"
           ],

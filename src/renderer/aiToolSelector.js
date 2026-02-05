@@ -101,9 +101,26 @@ function getCurrentTool() {
 
 /**
  * Get the start command for current tool
+ * @returns {string} The base command (without wrapper consideration)
  */
 function getStartCommand() {
   return currentTool ? currentTool.command : 'claude';
+}
+
+/**
+ * Get the executable command for current tool (uses wrapper if available)
+ * @param {string} projectPath - Path to the current project
+ * @returns {Promise<string>} The command to execute
+ */
+async function getExecutableCommand(projectPath) {
+  if (!currentTool) return 'claude';
+
+  const command = await ipcRenderer.invoke(IPC.GET_AI_TOOL_EXECUTABLE, {
+    toolId: currentTool.id,
+    projectPath
+  });
+
+  return command;
 }
 
 /**
@@ -136,6 +153,7 @@ module.exports = {
   init,
   getCurrentTool,
   getStartCommand,
+  getExecutableCommand,
   getCommand,
   supportsFeature
 };

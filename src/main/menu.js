@@ -8,6 +8,7 @@ const { Menu, shell } = require('electron');
 const path = require('path');
 const fs = require('fs');
 const { IPC } = require('../shared/ipcChannels');
+const pty = require('./pty');
 
 let mainWindow = null;
 let appPath = null;
@@ -141,11 +142,15 @@ function buildAICommandsSubmenu(tool) {
 
   submenu.push({ type: 'separator' });
 
-  // Start command
+  // Start command - uses wrapper script if available
   submenu.push({
     label: `Start ${tool.name}`,
     accelerator: 'CmdOrCtrl+K',
-    click: () => sendCommand(tool.command)
+    click: () => {
+      const projectPath = pty.getProjectPath();
+      const command = aiToolManager.getExecutableCommand(tool.id, projectPath);
+      sendCommand(command);
+    }
   });
 
   submenu.push({ type: 'separator' });

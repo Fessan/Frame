@@ -150,8 +150,8 @@ function setupButtonHandlers() {
         // Ensure the new terminal is focused
         terminal.setActiveTerminal(newTerminalId);
 
-        // Send start command for the selected AI tool
-        const startCommand = aiToolSelector.getStartCommand();
+        // Get executable command (uses wrapper script if available)
+        const startCommand = await aiToolSelector.getExecutableCommand(projectPath);
         setTimeout(() => {
           terminal.sendCommand(startCommand, newTerminalId);
         }, 1000);

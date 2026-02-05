@@ -7,9 +7,10 @@ const fs = require('fs');
 const path = require('path');
 const { dialog } = require('electron');
 const { IPC } = require('../shared/ipcChannels');
-const { FRAME_DIR, FRAME_CONFIG_FILE, FRAME_FILES } = require('../shared/frameConstants');
+const { FRAME_DIR, FRAME_CONFIG_FILE, FRAME_FILES, FRAME_BIN_DIR } = require('../shared/frameConstants');
 const templates = require('../shared/frameTemplates');
 const workspace = require('./workspace');
+const aiToolManager = require('./aiToolManager');
 
 let mainWindow = null;
 
@@ -100,6 +101,44 @@ function createSymlinkSafe(target, linkPath) {
 }
 
 /**
+ * Create wrapper scripts for AI tools that need them
+ * @param {string} projectPath - Path to the project
+ */
+function createWrapperScripts(projectPath) {
+  const binDirPath = path.join(projectPath, FRAME_DIR, FRAME_BIN_DIR);
+
+  // Get tools that need wrappers
+  const toolsNeedingWrapper = aiToolManager.getToolsRequiringWrapper();
+
+  if (toolsNeedingWrapper.length === 0) {
+    return;
+  }
+
+  // Create bin directory if it doesn't exist
+  if (!fs.existsSync(binDirPath)) {
+    fs.mkdirSync(binDirPath, { recursive: true });
+  }
+
+  // Create wrapper for each tool
+  for (const tool of toolsNeedingWrapper) {
+    const wrapperName = tool.wrapperName || tool.command;
+    const wrapperPath = path.join(binDirPath, wrapperName);
+
+    // Don't overwrite existing wrappers
+    if (fs.existsSync(wrapperPath)) {
+      continue;
+    }
+
+    // Generate wrapper script
+    const wrapperContent = templates.getWrapperScriptTemplate(tool.command, tool.name);
+
+    // Write wrapper script
+    fs.writeFileSync(wrapperPath, wrapperContent, { mode: 0o755 });
+    console.log(`Created wrapper script: ${wrapperPath}`);
+  }
+}
+
+/**
  * Check which Frame files already exist in the project
  */
 function checkExistingFrameFiles(projectPath) {
@@ -111,7 +150,8 @@ function checkExistingFrameFiles(projectPath) {
     { name: 'PROJECT_NOTES.md', path: path.join(projectPath, FRAME_FILES.NOTES) },
     { name: 'tasks.json', path: path.join(projectPath, FRAME_FILES.TASKS) },
     { name: 'QUICKSTART.md', path: path.join(projectPath, FRAME_FILES.QUICKSTART) },
-    { name: '.frame/', path: path.join(projectPath, FRAME_DIR) }
+    { name: '.frame/', path: path.join(projectPath, FRAME_DIR) },
+    { name: '.frame/bin/', path: path.join(projectPath, FRAME_DIR, FRAME_BIN_DIR) }
   ];
 
   for (const file of filesToCheck) {
@@ -129,6 +169,10 @@ function checkExistingFrameFiles(projectPath) {
 async function showInitializeConfirmation(projectPath) {
   const existingFiles = checkExistingFrameFiles(projectPath);
 
+  // Check which AI tools need wrappers
+  const toolsNeedingWrapper = aiToolManager.getToolsRequiringWrapper();
+  const wrapperNames = toolsNeedingWrapper.map(t => t.wrapperName || t.command);
+
   let message = 'This will create the following files in your project:\n\n';
   message += '  • .frame/ (config directory)\n';
   message += '  • AGENTS.md (AI instructions)\n';
@@ -137,6 +181,10 @@ async function showInitializeConfirmation(projectPath) {
   message += '  • PROJECT_NOTES.md (session notes)\n';
   message += '  • tasks.json (task tracking)\n';
   message += '  • QUICKSTART.md (getting started)\n';
+
+  if (wrapperNames.length > 0) {
+    message += `  • .frame/bin/ (wrapper scripts for: ${wrapperNames.join(', ')})\n`;
+  }
 
   if (existingFiles.length > 0) {
     message += '\n⚠️ These files already exist and will NOT be overwritten:\n';
@@ -211,6 +259,9 @@ function initializeFrameProject(projectPath, projectName) {
     path.join(projectPath, FRAME_FILES.QUICKSTART),
     templates.getQuickstartTemplate(name)
   );
+
+  // Create wrapper scripts for non-Claude AI tools
+  createWrapperScripts(projectPath);
 
   // Update workspace to mark as Frame project
   workspace.updateProjectFrameStatus(projectPath, true);
