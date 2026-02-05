@@ -270,6 +270,108 @@ function initializeFrameProject(projectPath, projectName) {
 }
 
 /**
+ * Upgrade an existing Frame project
+ * Creates missing files and wrapper scripts without overwriting existing ones
+ * @param {string} projectPath - Path to the project
+ * @returns {object} Upgrade result with list of created files
+ */
+function upgradeFrameProject(projectPath) {
+  const created = [];
+  const skipped = [];
+
+  // Check if it's a Frame project
+  if (!isFrameProject(projectPath)) {
+    throw new Error('Not a Frame project. Use Initialize instead.');
+  }
+
+  const config = getFrameConfig(projectPath);
+  const name = config?.name || path.basename(projectPath);
+
+  // Create wrapper scripts (won't overwrite existing)
+  const binDirPath = path.join(projectPath, FRAME_DIR, FRAME_BIN_DIR);
+  const toolsNeedingWrapper = aiToolManager.getToolsRequiringWrapper();
+
+  if (toolsNeedingWrapper.length > 0) {
+    if (!fs.existsSync(binDirPath)) {
+      fs.mkdirSync(binDirPath, { recursive: true });
+      created.push('.frame/bin/');
+    }
+
+    for (const tool of toolsNeedingWrapper) {
+      const wrapperName = tool.wrapperName || tool.command;
+      const wrapperPath = path.join(binDirPath, wrapperName);
+
+      if (fs.existsSync(wrapperPath)) {
+        skipped.push(`.frame/bin/${wrapperName}`);
+        continue;
+      }
+
+      const wrapperContent = templates.getWrapperScriptTemplate(tool.command, tool.name);
+      fs.writeFileSync(wrapperPath, wrapperContent, { mode: 0o755 });
+      created.push(`.frame/bin/${wrapperName}`);
+      console.log(`Created wrapper script: ${wrapperPath}`);
+    }
+  }
+
+  // Create missing root files
+  const filesToCreate = [
+    { path: path.join(projectPath, FRAME_FILES.AGENTS), template: () => templates.getAgentsTemplate(name), name: 'AGENTS.md' },
+    { path: path.join(projectPath, FRAME_FILES.STRUCTURE), template: () => templates.getStructureTemplate(name), name: 'STRUCTURE.json' },
+    { path: path.join(projectPath, FRAME_FILES.NOTES), template: () => templates.getNotesTemplate(name), name: 'PROJECT_NOTES.md' },
+    { path: path.join(projectPath, FRAME_FILES.TASKS), template: () => templates.getTasksTemplate(name), name: 'tasks.json' },
+    { path: path.join(projectPath, FRAME_FILES.QUICKSTART), template: () => templates.getQuickstartTemplate(name), name: 'QUICKSTART.md' }
+  ];
+
+  for (const file of filesToCreate) {
+    if (fs.existsSync(file.path)) {
+      skipped.push(file.name);
+    } else {
+      const content = file.template();
+      const contentStr = typeof content === 'string' ? content : JSON.stringify(content, null, 2);
+      fs.writeFileSync(file.path, contentStr, 'utf8');
+      created.push(file.name);
+    }
+  }
+
+  // Ensure CLAUDE.md symlink exists
+  const symlinkPath = path.join(projectPath, FRAME_FILES.CLAUDE_SYMLINK);
+  if (!fs.existsSync(symlinkPath)) {
+    createSymlinkSafe(FRAME_FILES.AGENTS, symlinkPath);
+    created.push('CLAUDE.md (symlink)');
+  } else {
+    skipped.push('CLAUDE.md');
+  }
+
+  return { created, skipped };
+}
+
+/**
+ * Show upgrade confirmation dialog
+ */
+async function showUpgradeConfirmation(projectPath) {
+  const toolsNeedingWrapper = aiToolManager.getToolsRequiringWrapper();
+  const wrapperNames = toolsNeedingWrapper.map(t => t.wrapperName || t.command);
+
+  let message = 'This will create missing Frame files:\n\n';
+  message += '  • Wrapper scripts for: ' + wrapperNames.join(', ') + '\n';
+  message += '  • Any missing Frame files (AGENTS.md, etc.)\n';
+  message += '\nExisting files will NOT be overwritten.\n';
+  message += '\nDo you want to continue?';
+
+  const result = await dialog.showMessageBox(mainWindow, {
+    type: 'question',
+    buttons: ['Cancel', 'Upgrade'],
+    defaultId: 1,
+    cancelId: 0,
+    title: 'Upgrade Frame Project',
+    message: 'Upgrade Frame Project?',
+    detail: message
+  });
+
+  return result.response === 1;
+}
+
+/**
  * Setup IPC handlers
  */
 function setupIPC(ipcMain) {
@@ -317,6 +419,36 @@ function setupIPC(ipcMain) {
     const config = getFrameConfig(projectPath);
     event.sender.send(IPC.FRAME_CONFIG_DATA, { projectPath, config });
   });
+
+  ipcMain.on(IPC.UPGRADE_FRAME_PROJECT, async (event, { projectPath }) => {
+    try {
+      const confirmed = await showUpgradeConfirmation(projectPath);
+
+      if (!confirmed) {
+        event.sender.send(IPC.FRAME_PROJECT_UPGRADED, {
+          projectPath,
+          success: false,
+          cancelled: true
+        });
+        return;
+      }
+
+      const result = upgradeFrameProject(projectPath);
+      event.sender.send(IPC.FRAME_PROJECT_UPGRADED, {
+        projectPath,
+        success: true,
+        created: result.created,
+        skipped: result.skipped
+      });
+    } catch (err) {
+      console.error('Error upgrading Frame project:', err);
+      event.sender.send(IPC.FRAME_PROJECT_UPGRADED, {
+        projectPath,
+        success: false,
+        error: err.message
+      });
+    }
+  });
 }
 
 module.exports = {
@@ -324,5 +456,6 @@ module.exports = {
   isFrameProject,
   getFrameConfig,
   initializeFrameProject,
+  upgradeFrameProject,
   setupIPC
 };

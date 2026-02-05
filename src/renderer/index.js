@@ -27,7 +27,8 @@ function init() {
     pathElement: document.getElementById('project-path'),
     startClaudeBtn: document.getElementById('btn-start-ai'),
     fileExplorerHeader: document.getElementById('file-explorer-header'),
-    initializeFrameBtn: document.getElementById('btn-initialize-frame')
+    initializeFrameBtn: document.getElementById('btn-initialize-frame'),
+    upgradeFrameBtn: document.getElementById('btn-upgrade-frame')
   });
 
   // Initialize AI tool selector
@@ -114,6 +115,19 @@ function init() {
     tasksPanel.loadTasks();
   });
 
+  // Setup Frame upgraded listener
+  state.onFrameUpgraded((projectPath, created, skipped) => {
+    terminal.writelnToTerminal(`\x1b[1;32m✓ Frame project upgraded!\x1b[0m`);
+    if (created.length > 0) {
+      terminal.writelnToTerminal(`  Created: ${created.join(', ')}`);
+    }
+    if (skipped.length > 0) {
+      terminal.writelnToTerminal(`  Skipped (already exist): ${skipped.join(', ')}`);
+    }
+    // Refresh file tree to show new files
+    fileTreeUI.refreshFileTree();
+  });
+
   // Setup button handlers
   setupButtonHandlers();
 
@@ -177,6 +191,11 @@ function setupButtonHandlers() {
   // Initialize as Frame project
   document.getElementById('btn-initialize-frame').addEventListener('click', () => {
     state.initializeAsFrameProject();
+  });
+
+  // Upgrade Frame project
+  document.getElementById('btn-upgrade-frame').addEventListener('click', () => {
+    state.upgradeFrameProject();
   });
 }
 

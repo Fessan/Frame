@@ -11,6 +11,7 @@ let isCurrentProjectFrame = false;
 let onProjectChangeCallbacks = [];
 let onFrameStatusChangeCallbacks = [];
 let onFrameInitializedCallbacks = [];
+let onFrameUpgradedCallbacks = [];
 let multiTerminalUI = null; // Reference to MultiTerminalUI instance
 
 // UI Elements
@@ -18,6 +19,7 @@ let pathElement = null;
 let startClaudeBtn = null;
 let fileExplorerHeader = null;
 let initializeFrameBtn = null;
+let upgradeFrameBtn = null;
 
 /**
  * Initialize state module
@@ -27,6 +29,7 @@ function init(elements) {
   startClaudeBtn = elements.startClaudeBtn || document.getElementById('btn-start-claude');
   fileExplorerHeader = elements.fileExplorerHeader || document.getElementById('file-explorer-header');
   initializeFrameBtn = elements.initializeFrameBtn || document.getElementById('btn-initialize-frame');
+  upgradeFrameBtn = elements.upgradeFrameBtn || document.getElementById('btn-upgrade-frame');
 
   setupIPC();
 }
@@ -110,6 +113,13 @@ function onFrameInitialized(callback) {
 }
 
 /**
+ * Register callback for Frame project upgraded
+ */
+function onFrameUpgraded(callback) {
+  onFrameUpgradedCallbacks.push(callback);
+}
+
+/**
  * Update Frame-related UI
  */
 function updateFrameUI() {
@@ -119,6 +129,15 @@ function updateFrameUI() {
       initializeFrameBtn.style.display = 'block';
     } else {
       initializeFrameBtn.style.display = 'none';
+    }
+  }
+
+  if (upgradeFrameBtn) {
+    // Show "Upgrade Frame" button only for existing Frame projects
+    if (currentProjectPath && isCurrentProjectFrame) {
+      upgradeFrameBtn.style.display = 'block';
+    } else {
+      upgradeFrameBtn.style.display = 'none';
     }
   }
 }
@@ -132,6 +151,17 @@ function initializeAsFrameProject() {
     ipcRenderer.send(IPC.INITIALIZE_FRAME_PROJECT, {
       projectPath: currentProjectPath,
       projectName: projectName
+    });
+  }
+}
+
+/**
+ * Upgrade current Frame project (add missing files, wrapper scripts)
+ */
+function upgradeFrameProject() {
+  if (currentProjectPath && isCurrentProjectFrame) {
+    ipcRenderer.send(IPC.UPGRADE_FRAME_PROJECT, {
+      projectPath: currentProjectPath
     });
   }
 }
@@ -201,6 +231,14 @@ function setupIPC() {
       onFrameInitializedCallbacks.forEach(cb => cb(projectPath));
     }
   });
+
+  ipcRenderer.on(IPC.FRAME_PROJECT_UPGRADED, (event, { projectPath, success, created, skipped }) => {
+    if (success && projectPath === currentProjectPath) {
+      console.log('Frame project upgraded. Created:', created, 'Skipped:', skipped);
+      // Notify listeners
+      onFrameUpgradedCallbacks.forEach(cb => cb(projectPath, created, skipped));
+    }
+  });
 }
 
 module.exports = {
@@ -216,5 +254,7 @@ module.exports = {
   setIsFrameProject,
   onFrameStatusChange,
   onFrameInitialized,
-  initializeAsFrameProject
+  onFrameUpgraded,
+  initializeAsFrameProject,
+  upgradeFrameProject
 };

@@ -484,6 +484,7 @@
         "isFrameProject",
         "getFrameConfig",
         "initializeFrameProject",
+        "upgradeFrameProject",
         "setupIPC"
       ],
       "depends": [
@@ -563,8 +564,22 @@
           ],
           "purpose": "Initialize a project as Frame project"
         },
+        "upgradeFrameProject": {
+          "line": 278,
+          "params": [
+            "projectPath"
+          ],
+          "purpose": "Creates missing files and wrapper scripts without overwriting existing ones"
+        },
+        "showUpgradeConfirmation": {
+          "line": 351,
+          "params": [
+            "projectPath"
+          ],
+          "purpose": "Show upgrade confirmation dialog"
+        },
         "setupIPC": {
-          "line": 275,
+          "line": 377,
           "params": [
             "ipcMain"
           ],
@@ -575,13 +590,15 @@
         "listens": [
           "CHECK_IS_FRAME_PROJECT",
           "INITIALIZE_FRAME_PROJECT",
-          "GET_FRAME_CONFIG"
+          "GET_FRAME_CONFIG",
+          "UPGRADE_FRAME_PROJECT"
         ],
         "emits": [
           "IS_FRAME_PROJECT_RESULT",
           "FRAME_PROJECT_INITIALIZED",
           "WORKSPACE_UPDATED",
-          "FRAME_CONFIG_DATA"
+          "FRAME_CONFIG_DATA",
+          "FRAME_PROJECT_UPGRADED"
         ]
       }
     },
@@ -755,11 +772,11 @@
           "purpose": "Initialize all modules"
         },
         "setupButtonHandlers": {
-          "line": 132,
+          "line": 146,
           "purpose": "Setup button click handlers"
         },
         "setupKeyboardShortcuts": {
-          "line": 186,
+          "line": 205,
           "purpose": "Setup keyboard shortcuts"
         }
       }
@@ -1037,7 +1054,9 @@
         "setIsFrameProject",
         "onFrameStatusChange",
         "onFrameInitialized",
-        "initializeAsFrameProject"
+        "onFrameUpgraded",
+        "initializeAsFrameProject",
+        "upgradeFrameProject"
       ],
       "depends": [
         "electron",
@@ -1045,84 +1064,95 @@
       ],
       "functions": {
         "init": {
-          "line": 25,
+          "line": 27,
           "params": [
             "elements"
           ],
           "purpose": "Initialize state module"
         },
         "getProjectPath": {
-          "line": 37,
+          "line": 40,
           "purpose": "Get current project path"
         },
         "setMultiTerminalUI": {
-          "line": 44,
+          "line": 47,
           "params": [
             "ui"
           ],
           "purpose": "Set MultiTerminalUI reference for terminal session management"
         },
         "setProjectPath": {
-          "line": 51,
+          "line": 54,
           "params": [
             "path"
           ],
           "purpose": "Set project path and switch terminal session"
         },
         "onProjectChange": {
-          "line": 76,
+          "line": 79,
           "params": [
             "callback"
           ],
           "purpose": "Register callback for project change"
         },
         "getIsFrameProject": {
-          "line": 83,
+          "line": 86,
           "purpose": "Get Frame project status"
         },
         "setIsFrameProject": {
-          "line": 90,
+          "line": 93,
           "params": [
             "isFrame"
           ],
           "purpose": "Set Frame project status"
         },
         "onFrameStatusChange": {
-          "line": 101,
+          "line": 104,
           "params": [
             "callback"
           ],
           "purpose": "Register callback for Frame status change"
         },
         "onFrameInitialized": {
-          "line": 108,
+          "line": 111,
           "params": [
             "callback"
           ],
           "purpose": "Register callback for Frame project initialized"
         },
+        "onFrameUpgraded": {
+          "line": 118,
+          "params": [
+            "callback"
+          ],
+          "purpose": "Register callback for Frame project upgraded"
+        },
         "updateFrameUI": {
-          "line": 115,
+          "line": 125,
           "purpose": "Update Frame-related UI"
         },
         "initializeAsFrameProject": {
-          "line": 129,
+          "line": 148,
           "purpose": "Initialize current project as Frame project"
         },
+        "upgradeFrameProject": {
+          "line": 161,
+          "purpose": "Upgrade current Frame project (add missing files, wrapper scripts)"
+        },
         "updateProjectUI": {
-          "line": 142,
+          "line": 172,
           "purpose": "Update project UI elements"
         },
         "selectProjectFolder": {
-          "line": 171,
+          "line": 201,
           "purpose": "Request folder selection"
         },
         "createNewProject": {
-          "line": 178,
+          "line": 208,
           "purpose": "Request new project creation"
         },
         "setupIPC": {
-          "line": 185,
+          "line": 215,
           "purpose": "Setup IPC listeners"
         }
       },
@@ -1130,11 +1160,13 @@
         "listens": [
           "PROJECT_SELECTED",
           "IS_FRAME_PROJECT_RESULT",
-          "FRAME_PROJECT_INITIALIZED"
+          "FRAME_PROJECT_INITIALIZED",
+          "FRAME_PROJECT_UPGRADED"
         ],
         "emits": [
           "CHECK_IS_FRAME_PROJECT",
           "INITIALIZE_FRAME_PROJECT",
+          "UPGRADE_FRAME_PROJECT",
           "SELECT_PROJECT_FOLDER",
           "CREATE_NEW_PROJECT"
         ]

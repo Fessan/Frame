@@ -38,6 +38,8 @@ const IPC = {
   // Frame Project
   INITIALIZE_FRAME_PROJECT: 'initialize-frame-project',
   FRAME_PROJECT_INITIALIZED: 'frame-project-initialized',
+  UPGRADE_FRAME_PROJECT: 'upgrade-frame-project',
+  FRAME_PROJECT_UPGRADED: 'frame-project-upgraded',
   CHECK_IS_FRAME_PROJECT: 'check-is-frame-project',
   IS_FRAME_PROJECT_RESULT: 'is-frame-project-result',
   GET_FRAME_CONFIG: 'get-frame-config',
