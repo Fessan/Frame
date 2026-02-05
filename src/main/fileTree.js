@@ -29,8 +29,8 @@ function getFileTree(dirPath, maxDepth = 5, currentDepth = 0) {
     });
 
     for (const item of items) {
-      // Skip hidden files and node_modules
-      if (item.name.startsWith('.') || item.name === 'node_modules') continue;
+      // Skip node_modules
+      if (item.name === 'node_modules') continue;
 
       const fullPath = path.join(dirPath, item.name);
       const fileInfo = {
