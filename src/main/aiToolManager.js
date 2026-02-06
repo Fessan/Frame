@@ -19,10 +19,10 @@ const AI_TOOLS = {
     command: 'claude',
     description: 'Anthropic Claude Code CLI',
     commands: {
-      init: '/init',
-      commit: '/commit',
-      review: '/review-pr',
-      help: '/help'
+      init: { cmd: '/init', label: 'Initialize Project' },
+      commit: { cmd: '/commit', label: 'Commit Changes' },
+      review: { cmd: '/review-pr', label: 'Review' },
+      help: { cmd: '/help', label: 'Help' }
     },
     menuLabel: 'Claude Commands',
     supportsPlugins: true,
@@ -35,17 +35,16 @@ const AI_TOOLS = {
     command: 'codex',
     description: 'OpenAI Codex CLI',
     commands: {
-      review: '/review',
-      model: '/model',
-      permissions: '/permissions',
-      help: '/help'
+      review: { cmd: '/review', label: 'Review' },
+      model: { cmd: '/model', label: 'Switch Model' },
+      permissions: { cmd: '/permissions', label: 'Permissions' },
+      help: { cmd: '/help', label: 'Help' }
     },
     menuLabel: 'Codex Commands',
     supportsPlugins: false,
     // Codex doesn't read instruction files, needs wrapper
     needsWrapper: true,
-    wrapperName: 'codex',
-    promptFlag: '--prompt'
+    wrapperName: 'codex'
   }
 };
 
@@ -136,38 +135,6 @@ function getConfig() {
 }
 
 /**
- * Add a custom AI tool
- */
-function addCustomTool(tool) {
-  if (tool.id && tool.name && tool.command) {
-    config.customTools[tool.id] = {
-      ...tool,
-      commands: tool.commands || {},
-      menuLabel: tool.menuLabel || `${tool.name} Commands`,
-      supportsPlugins: tool.supportsPlugins || false
-    };
-    saveConfig();
-    return true;
-  }
-  return false;
-}
-
-/**
- * Remove a custom AI tool
- */
-function removeCustomTool(toolId) {
-  if (config.customTools[toolId]) {
-    delete config.customTools[toolId];
-    if (config.activeTool === toolId) {
-      config.activeTool = 'claude';
-    }
-    saveConfig();
-    return true;
-  }
-  return false;
-}
-
-/**
  * Setup IPC handlers
  */
 function setupIPC() {
@@ -190,7 +157,9 @@ function setupIPC() {
  */
 function getCommand(action) {
   const tool = getActiveTool();
-  return tool.commands[action] || null;
+  const command = tool.commands[action];
+  if (!command) return null;
+  return command.cmd || command;
 }
 
 /**
@@ -260,7 +229,5 @@ module.exports = {
   getToolsRequiringWrapper,
   getExecutableCommand,
   getActiveToolCommand,
-  addCustomTool,
-  removeCustomTool,
   AI_TOOLS
 };

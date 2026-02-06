@@ -85,11 +85,6 @@ function updateUI() {
     startBtn.textContent = `Start ${currentTool.name}`;
   }
 
-  // Show/hide plugins panel based on tool support
-  const pluginsPanel = document.getElementById('plugins-panel');
-  if (pluginsPanel && !currentTool.supportsPlugins) {
-    // Could hide or show a message - for now just leave it
-  }
 }
 
 /**
@@ -97,14 +92,6 @@ function updateUI() {
  */
 function getCurrentTool() {
   return currentTool;
-}
-
-/**
- * Get the start command for current tool
- * @returns {string} The base command (without wrapper consideration)
- */
-function getStartCommand() {
-  return currentTool ? currentTool.command : 'claude';
 }
 
 /**
@@ -128,7 +115,9 @@ async function getExecutableCommand(projectPath) {
  */
 function getCommand(action) {
   if (!currentTool || !currentTool.commands) return null;
-  return currentTool.commands[action] || null;
+  const command = currentTool.commands[action];
+  if (!command) return null;
+  return command.cmd || command;
 }
 
 /**
@@ -152,7 +141,6 @@ function supportsFeature(feature) {
 module.exports = {
   init,
   getCurrentTool,
-  getStartCommand,
   getExecutableCommand,
   getCommand,
   supportsFeature

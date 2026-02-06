@@ -1,7 +1,7 @@
 {
   "version": "1.0",
   "description": "Claude Code IDE - Module structure and IPC communication map",
-  "lastUpdated": "2026-02-05",
+  "lastUpdated": "2026-02-06",
   "architecture": {
     "type": "electron",
     "mainProcess": "src/main/index.js",
@@ -185,33 +185,32 @@
           "purpose": "Get menu template based on active AI tool"
         },
         "buildAICommandsSubmenu": {
-          "line": 94,
+          "line": 100,
           "params": [
             "tool"
-          ],
-          "purpose": "Build AI commands submenu based on active tool"
+          ]
         },
         "buildToolSwitcherSubmenu": {
-          "line": 186,
+          "line": 160,
           "purpose": "Build tool switcher submenu"
         },
         "sendCommand": {
-          "line": 205,
+          "line": 179,
           "params": [
             "command"
           ],
           "purpose": "Send command to terminal"
         },
         "toggleHistoryPanel": {
-          "line": 214,
+          "line": 188,
           "purpose": "Toggle history panel"
         },
         "openHistoryFile": {
-          "line": 223,
+          "line": 197,
           "purpose": "Open history file in default editor"
         },
         "createMenu": {
-          "line": 237,
+          "line": 211,
           "purpose": "Create and set application menu"
         }
       },
@@ -543,21 +542,21 @@
           "purpose": "Create wrapper scripts for AI tools that need them"
         },
         "checkExistingFrameFiles": {
-          "line": 144,
+          "line": 151,
           "params": [
             "projectPath"
           ],
           "purpose": "Check which Frame files already exist in the project"
         },
         "showInitializeConfirmation": {
-          "line": 169,
+          "line": 176,
           "params": [
             "projectPath"
           ],
           "purpose": "Show confirmation dialog before initializing Frame project"
         },
         "initializeFrameProject": {
-          "line": 212,
+          "line": 219,
           "params": [
             "projectPath",
             "projectName"
@@ -565,21 +564,21 @@
           "purpose": "Initialize a project as Frame project"
         },
         "upgradeFrameProject": {
-          "line": 278,
+          "line": 285,
           "params": [
             "projectPath"
           ],
           "purpose": "Creates missing files and wrapper scripts without overwriting existing ones"
         },
         "showUpgradeConfirmation": {
-          "line": 351,
+          "line": 337,
           "params": [
             "projectPath"
           ],
           "purpose": "Show upgrade confirmation dialog"
         },
         "setupIPC": {
-          "line": 377,
+          "line": 363,
           "params": [
             "ipcMain"
           ],
@@ -1637,8 +1636,7 @@
         "getTasksTemplate",
         "getQuickstartTemplate",
         "getFrameConfigTemplate",
-        "getWrapperScriptTemplate",
-        "getGenericWrapperTemplate"
+        "getWrapperScriptTemplate"
       ],
       "depends": [],
       "functions": {
@@ -1699,15 +1697,6 @@
             "toolName"
           ],
           "purpose": "This wrapper injects project context by prompting the tool to read AGENTS.md"
-        },
-        "getGenericWrapperTemplate": {
-          "line": 416,
-          "params": [
-            "toolCommand",
-            "toolName",
-            "promptFlag = '--prompt'"
-          ],
-          "purpose": "Generic wrapper template for custom AI tools"
         }
       }
     },
@@ -3140,8 +3129,6 @@
         "getToolsRequiringWrapper",
         "getExecutableCommand",
         "getActiveToolCommand",
-        "addCustomTool",
-        "removeCustomTool",
         "AI_TOOLS"
       ],
       "depends": [
@@ -3153,7 +3140,7 @@
       ],
       "functions": {
         "init": {
-          "line": 61,
+          "line": 60,
           "params": [
             "window",
             "app"
@@ -3161,67 +3148,53 @@
           "purpose": "Initialize the AI Tool Manager"
         },
         "loadConfig": {
-          "line": 71,
+          "line": 70,
           "purpose": "Load configuration from file"
         },
         "saveConfig": {
-          "line": 86,
+          "line": 85,
           "purpose": "Save configuration to file"
         },
         "getAvailableTools": {
-          "line": 97,
+          "line": 96,
           "purpose": "Get all available AI tools"
         },
         "getActiveTool": {
-          "line": 104,
+          "line": 103,
           "purpose": "Get the currently active tool"
         },
         "setActiveTool": {
-          "line": 112,
+          "line": 111,
           "params": [
             "toolId"
           ],
           "purpose": "Set the active AI tool"
         },
         "getConfig": {
-          "line": 131,
+          "line": 130,
           "purpose": "Get full configuration for renderer"
         },
-        "addCustomTool": {
-          "line": 141,
-          "params": [
-            "tool"
-          ],
-          "purpose": "Add a custom AI tool"
-        },
-        "removeCustomTool": {
-          "line": 158,
-          "params": [
-            "toolId"
-          ],
-          "purpose": "Remove a custom AI tool"
-        },
         "setupIPC": {
-          "line": 173,
+          "line": 140,
           "purpose": "Setup IPC handlers"
         },
         "getCommand": {
-          "line": 191,
+          "line": 158,
           "params": [
             "action"
           ],
           "purpose": "Get command for specific action"
         },
         "getStartCommand": {
-          "line": 199,
+          "line": 168,
           "purpose": "Get the start command for active tool"
         },
         "getToolsRequiringWrapper": {
-          "line": 207,
+          "line": 176,
           "purpose": "Get all tools that require wrapper scripts"
         },
         "getExecutableCommand": {
-          "line": 219,
+          "line": 188,
           "params": [
             "toolId",
             "projectPath"
@@ -3229,7 +3202,7 @@
           "purpose": "Returns wrapper path if exists in project, otherwise original command"
         },
         "getActiveToolCommand": {
-          "line": 247,
+          "line": 216,
           "params": [
             "projectPath"
           ],
@@ -3253,7 +3226,6 @@
       "exports": [
         "init",
         "getCurrentTool",
-        "getStartCommand",
         "getExecutableCommand",
         "getCommand",
         "supportsFeature"
@@ -3279,29 +3251,25 @@
           "purpose": "Update UI to reflect current tool"
         },
         "getCurrentTool": {
-          "line": 98,
+          "line": 93,
           "purpose": "Get the current active tool"
         },
-        "getStartCommand": {
-          "line": 106,
-          "purpose": "Get the start command for current tool"
-        },
         "getExecutableCommand": {
-          "line": 115,
+          "line": 102,
           "params": [
             "projectPath"
           ],
           "purpose": "Get the executable command for current tool (uses wrapper if available)"
         },
         "getCommand": {
-          "line": 129,
+          "line": 116,
           "params": [
             "action"
           ],
           "purpose": "Get a specific command for current tool"
         },
         "supportsFeature": {
-          "line": 137,
+          "line": 126,
           "params": [
             "feature"
           ],

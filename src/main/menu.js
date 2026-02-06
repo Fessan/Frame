@@ -91,53 +91,27 @@ function getMenuTemplate() {
 /**
  * Build AI commands submenu based on active tool
  */
+// Keyboard accelerators for known commands
+const COMMAND_ACCELERATORS = {
+  init: 'CmdOrCtrl+I',
+  commit: 'CmdOrCtrl+Shift+C'
+};
+
 function buildAICommandsSubmenu(tool) {
   const submenu = [];
 
-  // Tool-specific commands
-  if (tool.commands.init) {
-    submenu.push({
-      label: `Initialize Project (${tool.commands.init})`,
-      accelerator: 'CmdOrCtrl+I',
-      click: () => sendCommand(tool.commands.init)
-    });
-  }
-
-  if (tool.commands.commit) {
-    submenu.push({
-      label: `Commit Changes (${tool.commands.commit})`,
-      accelerator: 'CmdOrCtrl+Shift+C',
-      click: () => sendCommand(tool.commands.commit)
-    });
-  }
-
-  if (tool.commands.review) {
-    submenu.push({
-      label: `Review (${tool.commands.review})`,
-      click: () => sendCommand(tool.commands.review)
-    });
-  }
-
-  // Codex-specific commands
-  if (tool.commands.model) {
-    submenu.push({
-      label: `Switch Model (${tool.commands.model})`,
-      click: () => sendCommand(tool.commands.model)
-    });
-  }
-
-  if (tool.commands.permissions) {
-    submenu.push({
-      label: `Permissions (${tool.commands.permissions})`,
-      click: () => sendCommand(tool.commands.permissions)
-    });
-  }
-
-  if (tool.commands.help) {
-    submenu.push({
-      label: `Help (${tool.commands.help})`,
-      click: () => sendCommand(tool.commands.help)
-    });
+  // Build menu items dynamically from tool.commands
+  for (const [key, command] of Object.entries(tool.commands)) {
+    const cmd = command.cmd || command;
+    const label = command.label || key;
+    const item = {
+      label: `${label} (${cmd})`,
+      click: () => sendCommand(cmd)
+    };
+    if (COMMAND_ACCELERATORS[key]) {
+      item.accelerator = COMMAND_ACCELERATORS[key];
+    }
+    submenu.push(item);
   }
 
   submenu.push({ type: 'separator' });
@@ -236,10 +210,8 @@ function openHistoryFile() {
  */
 function createMenu() {
   const template = getMenuTemplate();
-  console.log('Creating menu with', template.length, 'items. First item:', template[0]?.label);
   const menu = Menu.buildFromTemplate(template);
   Menu.setApplicationMenu(menu);
-  console.log('Menu applied successfully');
   return menu;
 }
 

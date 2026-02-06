@@ -106,19 +106,23 @@ function createSymlinkSafe(target, linkPath) {
  */
 function createWrapperScripts(projectPath) {
   const binDirPath = path.join(projectPath, FRAME_DIR, FRAME_BIN_DIR);
+  const created = [];
+  const skipped = [];
 
   // Get tools that need wrappers
   const toolsNeedingWrapper = aiToolManager.getToolsRequiringWrapper();
 
   if (toolsNeedingWrapper.length === 0) {
-    return;
+    return { created, skipped };
   }
 
   // Create bin directory if it doesn't exist
   if (!fs.existsSync(binDirPath)) {
     fs.mkdirSync(binDirPath, { recursive: true });
+    created.push('.frame/bin/');
   }
 
+  // TODO: Windows support — generate .bat/.ps1 wrappers alongside bash scripts
   // Create wrapper for each tool
   for (const tool of toolsNeedingWrapper) {
     const wrapperName = tool.wrapperName || tool.command;
@@ -126,6 +130,7 @@ function createWrapperScripts(projectPath) {
 
     // Don't overwrite existing wrappers
     if (fs.existsSync(wrapperPath)) {
+      skipped.push(`.frame/bin/${wrapperName}`);
       continue;
     }
 
@@ -134,8 +139,10 @@ function createWrapperScripts(projectPath) {
 
     // Write wrapper script
     fs.writeFileSync(wrapperPath, wrapperContent, { mode: 0o755 });
-    console.log(`Created wrapper script: ${wrapperPath}`);
+    created.push(`.frame/bin/${wrapperName}`);
   }
+
+  return { created, skipped };
 }
 
 /**
@@ -288,30 +295,9 @@ function upgradeFrameProject(projectPath) {
   const name = config?.name || path.basename(projectPath);
 
   // Create wrapper scripts (won't overwrite existing)
-  const binDirPath = path.join(projectPath, FRAME_DIR, FRAME_BIN_DIR);
-  const toolsNeedingWrapper = aiToolManager.getToolsRequiringWrapper();
-
-  if (toolsNeedingWrapper.length > 0) {
-    if (!fs.existsSync(binDirPath)) {
-      fs.mkdirSync(binDirPath, { recursive: true });
-      created.push('.frame/bin/');
-    }
-
-    for (const tool of toolsNeedingWrapper) {
-      const wrapperName = tool.wrapperName || tool.command;
-      const wrapperPath = path.join(binDirPath, wrapperName);
-
-      if (fs.existsSync(wrapperPath)) {
-        skipped.push(`.frame/bin/${wrapperName}`);
-        continue;
-      }
-
-      const wrapperContent = templates.getWrapperScriptTemplate(tool.command, tool.name);
-      fs.writeFileSync(wrapperPath, wrapperContent, { mode: 0o755 });
-      created.push(`.frame/bin/${wrapperName}`);
-      console.log(`Created wrapper script: ${wrapperPath}`);
-    }
-  }
+  const wrapperResult = createWrapperScripts(projectPath);
+  created.push(...wrapperResult.created);
+  skipped.push(...wrapperResult.skipped);
 
   // Create missing root files
   const filesToCreate = [
