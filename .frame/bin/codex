@@ -16,4 +16,4 @@ if ! command -v codex &> /dev/null; then
 fi
 
 # Run the tool with initial context prompt
-codex --prompt "Please read AGENTS.md first and follow the project instructions defined there. This is a Frame-managed project." "$@"
+codex "Please read AGENTS.md first and follow the project instructions defined there. This is a Frame-managed project. $*"
