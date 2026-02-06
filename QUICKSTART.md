@@ -1,6 +1,6 @@
 <!-- FRAME AUTO-GENERATED FILE -->
 <!-- Purpose: Quick onboarding guide for developers and AI assistants -->
-<!-- For Claude: Read this FIRST to quickly understand how to work with this project. Contains setup instructions, common commands, and key files to know. -->
+<!-- For AI assistants: Read this FIRST to quickly understand how to work with this project. Contains setup instructions, common commands, and key files to know. -->
 <!-- Last Updated: 2026-01-26 -->
 
 # Frame - Quick Start Guide
@@ -38,7 +38,7 @@ npm run dist
 | `PROJECT_NOTES.md` | Decisions and context |
 | `tasks.json` | Task tracking |
 | `AGENTS.md` | Instructions for AI assistants |
-| `CLAUDE.md` | Symlink to AGENTS.md (Claude Code compatibility) |
+| `CLAUDE.md` | Symlink/copy to `AGENTS.md` (Claude Code compatibility) |
 | `QUICKSTART.md` | This file |
 
 ## Project Structure
@@ -55,7 +55,7 @@ Frame/
 └── ...
 ```
 
-## For AI Assistants (Claude)
+## For AI Assistants
 
 1. **First**: Read `STRUCTURE.json` for architecture overview
 2. **Then**: Check `PROJECT_NOTES.md` for current context and decisions
@@ -65,9 +65,9 @@ Frame/
 
 ## Quick Context
 
-Frame is a project management IDE for Claude Code. It provides:
+Frame is a terminal-first project management environment for AI coding tools (Claude Code, Codex CLI, etc.). It provides:
 - Visual task management
 - Context preservation between sessions
-- Plugins panel for Claude Code plugins
+- Tool-aware panels (e.g. Plugins for Claude Code)
 - Multi-terminal support
 - File explorer and editor

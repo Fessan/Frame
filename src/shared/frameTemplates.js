@@ -1,7 +1,7 @@
 /**
  * Frame Templates
  * Templates for auto-generated Frame project files
- * Each template includes instructions header for Claude Code
+ * Templates are tool-agnostic (Claude Code, Codex CLI, etc.)
  */
 
 /**
@@ -259,7 +259,7 @@ function getTasksTemplate(projectName) {
       _comment: "This schema shows the expected structure for each task",
       id: "unique-id (task-xxx format)",
       title: "Short actionable title (max 60 chars)",
-      description: "Claude's detailed explanation - what, how, which files affected",
+      description: "AI's detailed explanation - what, how, which files affected",
       userRequest: "Original user prompt/request - copy verbatim",
       acceptanceCriteria: "When is this task done? Concrete testable criteria",
       notes: "Discussion notes, alternatives considered, dependencies (optional)",
@@ -293,7 +293,7 @@ function getQuickstartTemplate(projectName) {
   const date = getDateString();
   return `<!-- FRAME AUTO-GENERATED FILE -->
 <!-- Purpose: Quick onboarding guide for developers and AI assistants -->
-<!-- For Claude: Read this FIRST to quickly understand how to work with this project. Contains setup instructions, common commands, and key files to know. -->
+<!-- For AI assistants: Read this FIRST to quickly understand how to work with this project. Contains setup instructions, common commands, and key files to know. -->
 <!-- Last Updated: ${date} -->
 
 # ${projectName} - Quick Start Guide
@@ -338,11 +338,11 @@ ${projectName}/
 └── ...
 \`\`\`
 
-## For AI Assistants (Claude)
+## For AI Assistants
 
 1. **First**: Read \`STRUCTURE.json\` for architecture overview
 2. **Then**: Check \`PROJECT_NOTES.md\` for current context and decisions
-3. **Check**: \`todos.json\` for pending tasks
+3. **Check**: \`tasks.json\` for pending tasks
 4. **Follow**: Existing code patterns and conventions
 5. **Update**: These files as you make changes
 
@@ -379,7 +379,7 @@ function getFrameConfigTemplate(projectName) {
 }
 
 /**
- * Wrapper script template for non-Claude AI tools
+ * Wrapper script template for AI tools that don't auto-read instruction files
  * This wrapper injects project context by prompting the tool to read AGENTS.md
  * @param {string} toolCommand - The original command (e.g., 'codex')
  * @param {string} toolName - Human-readable name (e.g., 'Codex CLI')

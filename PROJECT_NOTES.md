@@ -2,7 +2,7 @@
 
 ## Project Vision
 
-**Problem:** When developing with Claude Code, there's no need for tools like VS Code or Cursor - they are designed for writing code manually. But when staying in the terminal:
+**Problem:** When developing with AI coding tools (Claude Code, Codex CLI, etc.), there's no need for tools like VS Code or Cursor - they are designed for writing code manually. But when staying in the terminal:
 - Projects remain disorganized
 - Context is lost between sessions
 - Decisions are forgotten
@@ -10,16 +10,16 @@
 
 **Solution:** Frame - a terminal-centric development framework. Not an IDE, but a **framework**.
 
-**Why "Frame":** The word means "framework". Within Frame, we create "Frame projects" - with standard documents (CLAUDE.md, tasks.json, STRUCTURE.json), every project has the same structure.
+**Why "Frame":** The word means "framework". Within Frame, we create "Frame projects" - with standard documents (AGENTS.md, STRUCTURE.json, PROJECT_NOTES.md, tasks.json), so every project has the same structure.
 
 **Core Philosophy:**
 - **Terminal-first:** The center is not a code editor, but the terminal. Even multiple terminals (grid).
-- **Claude Code-native:** This tool is for those who develop with Claude Code.
+- **Tool-aware:** Works with multiple AI coding tools and adapts UI/commands based on the active tool.
 - **Standardization:** Every project has the same structure, the same documents.
 - **Context preservation:** Session notes, decisions, tasks - nothing should be lost.
 - **Manageability:** All projects can be viewed and managed from one place.
 
-**Target User:** Developers who do daily development with Claude Code, working terminal-focused.
+**Target User:** Developers who do daily development with AI coding tools, working terminal-focused.
 
 **What Frame is NOT:**
 - Not a code editor (there's a file editor but it's not central)
@@ -29,7 +29,7 @@
 ---
 
 ## Project Summary
-IDE-style desktop application for Claude Code. Features a 3-panel layout with project explorer, multi-terminal support (tabs/grid), file editor, and prompt history.
+Terminal-first desktop application for AI coding tools. Features a 3-panel layout with project explorer, multi-terminal support (tabs/grid), file editor, and prompt history.
 
 **App Name:** Frame (formerly Claude Code IDE)
 
@@ -46,7 +46,7 @@ IDE-style desktop application for Claude Code. Features a 3-panel layout with pr
 ### Why These Technologies?
 - **Electron**: Single codebase for Windows, macOS, Linux
 - **xterm.js**: Full ANSI support, progress bars, VT100 emulation
-- **node-pty**: Real PTY for interactive CLI tools like Claude Code
+- **node-pty**: Real PTY for interactive CLI tools (Claude Code, Codex CLI, etc.)
 - **esbuild**: Sub-second builds, ES module support
 
 ---
@@ -79,15 +79,16 @@ src/
 
 ```bash
 # esbuild bundles renderer modules
-npm run build:renderer  # One-time build
-npm run watch:renderer  # Watch mode for dev
-npm start              # Builds + starts app
+npm run build  # One-time build
+npm run watch  # Watch mode for dev
+npm start      # Build + start app
+npm run dev    # Watch + start app
 ```
 
 **esbuild.config.js:**
 - Entry: `src/renderer/index.js`
-- Output: `dist/renderer.bundle.js`
-- Platform: browser
+- Output: `dist/renderer.js`
+- Platform: node (Electron renderer bundle, `electron` kept external)
 - Bundle: true (includes all imports)
 
 ### Process Architecture
@@ -188,9 +189,9 @@ TERMINAL_RESIZE_ID: 'terminal-resize-id',
 
 | Shortcut | Action |
 |----------|--------|
-| Ctrl+K | Start Claude Code |
-| Ctrl+I | Run /init |
-| Ctrl+Shift+C | Run /commit |
+| Ctrl+K | Start active AI tool |
+| Ctrl+I | Run tool init command (if supported) |
+| Ctrl+Shift+C | Run tool commit command (if supported) |
 | Ctrl+H | Open history file |
 | Ctrl+Shift+H | Toggle history panel |
 | Ctrl+Shift+T | New terminal |
@@ -199,6 +200,8 @@ TERMINAL_RESIZE_ID: 'terminal-resize-id',
 | Ctrl+Shift+Tab | Previous terminal |
 | Ctrl+1-9 | Switch to terminal N |
 | Ctrl+Shift+G | Toggle grid view |
+| Ctrl+T | Toggle tasks panel |
+| Ctrl+Shift+P | Toggle plugins panel (Claude Code) |
 
 ---
 
@@ -287,7 +290,7 @@ _renderTabView(state) {
 2. Add handler in `src/main/ptyManager.js`
 3. Register IPC in `src/main/index.js`
 4. Add UI in renderer module
-5. Build: `npm run build:renderer`
+5. Build: `npm run build`
 
 ### Adding New Panel
 
@@ -544,3 +547,24 @@ xterm.js (same)                 xterm.js (same)
 ```
 
 **Decision:** Added to roadmap as "Frame Server" - will consider for future development based on community interest.
+
+---
+
+### [2026-02-06] Make Docs Tool-Agnostic (Multi-Tool)
+
+**User:**
+> "даавай знаешь что сделаем. сейчас этот проект может работать не только с клаауд кодом. наадо переписать ридми. и остаальную доку, учитывая правки что я сделал"
+
+**Assistant:**
+> "Понял задачу: переписать `README.md` и остальную документацию так, чтобы проект был tool-agnostic (не только Claude Code) и отражал ваши последние изменения."
+
+**User:**
+> "2"
+
+**Assistant:**
+> "Но заметил неожиданное: `tasks.json` в корне проекта перезаписался и потерял все существующие задачи... Как поступаем с `tasks.json`?
+> 1. Восстановить из `HEAD`...
+> 2. Оставить текущий пустой вариант."
+
+**User:**
+> "да. можно. закоммить и запушь"

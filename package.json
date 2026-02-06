@@ -2,7 +2,7 @@
   "name": "frame",
   "productName": "Frame",
   "version": "1.0.0",
-  "description": "Frame - Project Management IDE for Claude Code",
+  "description": "Frame - Terminal-first project manager for AI coding tools",
   "main": "src/main/index.js",
   "scripts": {
     "postinstall": "electron-rebuild",
@@ -20,7 +20,9 @@
   "keywords": [
     "electron",
     "terminal",
+    "ai",
     "claude",
+    "codex",
     "frame",
     "ide",
     "project-management"
