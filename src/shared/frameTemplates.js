@@ -403,7 +403,8 @@ if ! command -v ${toolCommand} &> /dev/null; then
 fi
 
 # Run the tool with initial context prompt
-${toolCommand} "Please read AGENTS.md first and follow the project instructions defined there. This is a Frame-managed project. $@"
+FRAME_BOOTSTRAP_PROMPT='Please read AGENTS.md first and follow the project instructions defined there. This is a Frame-managed project. If AGENTS.md defines skills or agent workflows, use them when relevant.'
+"${toolCommand}" "$FRAME_BOOTSTRAP_PROMPT" "$@"
 `;
 }
 

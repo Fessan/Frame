@@ -10,6 +10,11 @@ const { IPC } = require('../shared/ipcChannels');
 
 let mainWindow = null;
 let configPath = null;
+const FRAME_BOOTSTRAP_PROMPT = 'Please read AGENTS.md first and follow the project instructions defined there. This is a Frame-managed project. If AGENTS.md defines skills or agent workflows, use them when relevant.';
+
+function escapeForShellDoubleQuotes(value) {
+  return value.replace(/\\/g, '\\\\').replace(/"/g, '\\"').replace(/\$/g, '\\$').replace(/`/g, '\\`');
+}
 
 // Default AI tools configuration
 const AI_TOOLS = {
@@ -210,11 +215,19 @@ function getExecutableCommand(toolId, projectPath) {
 
   // Check if wrapper exists in project
   if (projectPath) {
-    const { FRAME_DIR, FRAME_BIN_DIR } = require('../shared/frameConstants');
+    const { FRAME_DIR, FRAME_BIN_DIR, FRAME_FILES } = require('../shared/frameConstants');
     const wrapperPath = path.join(projectPath, FRAME_DIR, FRAME_BIN_DIR, tool.wrapperName || tool.command);
 
     if (fs.existsSync(wrapperPath)) {
       return wrapperPath;
+    }
+
+    // If wrapper is missing but AGENTS.md exists, still bootstrap context inline.
+    // This keeps skills/agent workflows available in existing Frame projects
+    // that were initialized before a tool wrapper was introduced.
+    const agentsPath = path.join(projectPath, FRAME_FILES.AGENTS);
+    if (fs.existsSync(agentsPath)) {
+      return `${tool.command} "${escapeForShellDoubleQuotes(FRAME_BOOTSTRAP_PROMPT)}"`;
     }
   }
 

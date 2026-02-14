@@ -3139,8 +3139,14 @@
         "shared/frameConstants"
       ],
       "functions": {
+        "escapeForShellDoubleQuotes": {
+          "line": 15,
+          "params": [
+            "value"
+          ]
+        },
         "init": {
-          "line": 74,
+          "line": 79,
           "params": [
             "window",
             "app"
@@ -3148,53 +3154,53 @@
           "purpose": "Initialize the AI Tool Manager"
         },
         "loadConfig": {
-          "line": 84,
+          "line": 89,
           "purpose": "Load configuration from file"
         },
         "saveConfig": {
-          "line": 99,
+          "line": 104,
           "purpose": "Save configuration to file"
         },
         "getAvailableTools": {
-          "line": 110,
+          "line": 115,
           "purpose": "Get all available AI tools"
         },
         "getActiveTool": {
-          "line": 117,
+          "line": 122,
           "purpose": "Get the currently active tool"
         },
         "setActiveTool": {
-          "line": 125,
+          "line": 130,
           "params": [
             "toolId"
           ],
           "purpose": "Set the active AI tool"
         },
         "getConfig": {
-          "line": 144,
+          "line": 149,
           "purpose": "Get full configuration for renderer"
         },
         "setupIPC": {
-          "line": 154,
+          "line": 159,
           "purpose": "Setup IPC handlers"
         },
         "getCommand": {
-          "line": 172,
+          "line": 177,
           "params": [
             "action"
           ],
           "purpose": "Get command for specific action"
         },
         "getStartCommand": {
-          "line": 182,
+          "line": 187,
           "purpose": "Get the start command for active tool"
         },
         "getToolsRequiringWrapper": {
-          "line": 190,
+          "line": 195,
           "purpose": "Get all tools that require wrapper scripts"
         },
         "getExecutableCommand": {
-          "line": 202,
+          "line": 207,
           "params": [
             "toolId",
             "projectPath"
@@ -3202,7 +3208,7 @@
           "purpose": "Returns wrapper path if exists in project, otherwise original command"
         },
         "getActiveToolCommand": {
-          "line": 230,
+          "line": 243,
           "params": [
             "projectPath"
           ],
