@@ -2,12 +2,12 @@
   "_frame_metadata": {
     "purpose": "Task tracking for the project",
     "forAI": "Check this file to understand what tasks are pending, in progress, or completed. Update task status as you work. Add new tasks when discovered during development. Follow the task recognition rules in AGENTS.md. IMPORTANT: Include userRequest (original user prompt), detailed description, and acceptanceCriteria for each task.",
-    "lastUpdated": "2026-02-06",
+    "lastUpdated": "2026-02-14",
     "generatedBy": "Frame"
   },
   "project": "Frame",
   "version": "1.1",
-  "lastUpdated": "2026-02-06T10:09:42Z",
+  "lastUpdated": "2026-02-14T09:44:17Z",
   "taskSchema": {
     "_comment": "This schema shows the expected structure for each task",
     "id": "unique-id (task-xxx format)",
@@ -27,11 +27,27 @@
   "tasks": {
     "pending": [],
     "inProgress": [],
-    "completed": []
+    "completed": [
+      {
+        "id": "task-001",
+        "title": "Add OpenCode CLI launch support",
+        "description": "Add OpenCode CLI as a built-in AI tool profile so it can be selected and started from the Frame UI and menu. Configure the tool to use wrapper scripts, matching existing behavior for tools that do not auto-read AGENTS.md. Update user-facing documentation to list OpenCode in supported tools, installation instructions, and troubleshooting.",
+        "userRequest": "User said: \"нет. давай внесем правки. добавим запуск опен кода\"",
+        "acceptanceCriteria": "1) OpenCode appears in AI tool selector and can be set as active tool. 2) Start action runs `opencode` (or project wrapper when available). 3) README and QUICKSTART mention OpenCode support and installation requirement.",
+        "notes": "Implemented in src/main/aiToolManager.js, src/main/menu.js, README.md, and QUICKSTART.md. Build verification completed with `npm run build`.",
+        "status": "completed",
+        "priority": "medium",
+        "category": "feature",
+        "context": "2026-02-14 session: user requested adding OpenCode launch support in Frame.",
+        "createdAt": "2026-02-14T09:44:17Z",
+        "updatedAt": "2026-02-14T09:44:17Z",
+        "completedAt": "2026-02-14T09:44:17Z"
+      }
+    ]
   },
   "metadata": {
-    "totalCreated": 0,
-    "totalCompleted": 0
+    "totalCreated": 1,
+    "totalCompleted": 1
   },
   "categories": {
     "feature": "New features",

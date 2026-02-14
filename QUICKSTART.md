@@ -65,7 +65,7 @@ Frame/
 
 ## Quick Context
 
-Frame is a terminal-first project management environment for AI coding tools (Claude Code, Codex CLI, etc.). It provides:
+Frame is a terminal-first project management environment for AI coding tools (Claude Code, Codex CLI, OpenCode CLI, etc.). It provides:
 - Visual task management
 - Context preservation between sessions
 - Tool-aware panels (e.g. Plugins for Claude Code)

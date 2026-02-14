@@ -99,9 +99,10 @@ const COMMAND_ACCELERATORS = {
 
 function buildAICommandsSubmenu(tool) {
   const submenu = [];
+  const commandEntries = Object.entries(tool.commands || {});
 
   // Build menu items dynamically from tool.commands
-  for (const [key, command] of Object.entries(tool.commands)) {
+  for (const [key, command] of commandEntries) {
     const cmd = command.cmd || command;
     const label = command.label || key;
     const item = {
@@ -114,7 +115,9 @@ function buildAICommandsSubmenu(tool) {
     submenu.push(item);
   }
 
-  submenu.push({ type: 'separator' });
+  if (commandEntries.length > 0) {
+    submenu.push({ type: 'separator' });
+  }
 
   // Start command - uses wrapper script if available
   submenu.push({

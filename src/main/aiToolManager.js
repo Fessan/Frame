@@ -45,6 +45,20 @@ const AI_TOOLS = {
     // Codex doesn't read instruction files, needs wrapper
     needsWrapper: true,
     wrapperName: 'codex'
+  },
+  opencode: {
+    id: 'opencode',
+    name: 'OpenCode CLI',
+    command: 'opencode',
+    description: 'OpenCode CLI',
+    commands: {
+      help: { cmd: '/help', label: 'Help' }
+    },
+    menuLabel: 'OpenCode Commands',
+    supportsPlugins: false,
+    // OpenCode doesn't auto-read instruction files, needs wrapper
+    needsWrapper: true,
+    wrapperName: 'opencode'
   }
 };
 

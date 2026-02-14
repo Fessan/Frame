@@ -24,6 +24,7 @@ Frame combines:
 Out of the box, Frame ships with tool profiles for:
 - **Claude Code** (expects `claude` in `PATH`)
 - **Codex CLI** (expects `codex` in `PATH`)
+- **OpenCode CLI** (expects `opencode` in `PATH`)
 
 You can switch tools in the UI (dropdown next to Start button) or from the app menu. The menu adapts to the active tool (commands, labels).
 
@@ -56,6 +57,7 @@ npm start
 Frame does not bundle AI CLIs. Install the tool(s) you want and ensure the executable is available in your `PATH`:
 - `claude` (Claude Code)
 - `codex` (Codex CLI)
+- `opencode` (OpenCode CLI)
 
 ## Usage
 
@@ -78,7 +80,7 @@ If a repo is not initialized as a Frame project yet, you can initialize or upgra
 - `PROJECT_NOTES.md` (session notes)
 - `tasks.json` (task tracking)
 - `QUICKSTART.md` (onboarding)
-- `.frame/bin/` (wrappers for tools that need them, e.g. Codex)
+- `.frame/bin/` (wrappers for tools that need them, e.g. Codex/OpenCode)
 
 ## Keyboard shortcuts
 
@@ -104,7 +106,7 @@ npm run dev
 
 ## Troubleshooting
 
-### "claude: command not found" / "codex: command not found"
+### "claude: command not found" / "codex: command not found" / "opencode: command not found"
 Install the corresponding tool and ensure it is in `PATH`.
 
 ### GitHub panel shows "gh CLI not installed"

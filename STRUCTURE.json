@@ -1,7 +1,7 @@
 {
   "version": "1.0",
   "description": "Claude Code IDE - Module structure and IPC communication map",
-  "lastUpdated": "2026-02-06",
+  "lastUpdated": "2026-02-14",
   "architecture": {
     "type": "electron",
     "mainProcess": "src/main/index.js",
@@ -191,26 +191,26 @@
           ]
         },
         "buildToolSwitcherSubmenu": {
-          "line": 160,
+          "line": 163,
           "purpose": "Build tool switcher submenu"
         },
         "sendCommand": {
-          "line": 179,
+          "line": 182,
           "params": [
             "command"
           ],
           "purpose": "Send command to terminal"
         },
         "toggleHistoryPanel": {
-          "line": 188,
+          "line": 191,
           "purpose": "Toggle history panel"
         },
         "openHistoryFile": {
-          "line": 197,
+          "line": 200,
           "purpose": "Open history file in default editor"
         },
         "createMenu": {
-          "line": 211,
+          "line": 214,
           "purpose": "Create and set application menu"
         }
       },
@@ -3140,7 +3140,7 @@
       ],
       "functions": {
         "init": {
-          "line": 60,
+          "line": 74,
           "params": [
             "window",
             "app"
@@ -3148,53 +3148,53 @@
           "purpose": "Initialize the AI Tool Manager"
         },
         "loadConfig": {
-          "line": 70,
+          "line": 84,
           "purpose": "Load configuration from file"
         },
         "saveConfig": {
-          "line": 85,
+          "line": 99,
           "purpose": "Save configuration to file"
         },
         "getAvailableTools": {
-          "line": 96,
+          "line": 110,
           "purpose": "Get all available AI tools"
         },
         "getActiveTool": {
-          "line": 103,
+          "line": 117,
           "purpose": "Get the currently active tool"
         },
         "setActiveTool": {
-          "line": 111,
+          "line": 125,
           "params": [
             "toolId"
           ],
           "purpose": "Set the active AI tool"
         },
         "getConfig": {
-          "line": 130,
+          "line": 144,
           "purpose": "Get full configuration for renderer"
         },
         "setupIPC": {
-          "line": 140,
+          "line": 154,
           "purpose": "Setup IPC handlers"
         },
         "getCommand": {
-          "line": 158,
+          "line": 172,
           "params": [
             "action"
           ],
           "purpose": "Get command for specific action"
         },
         "getStartCommand": {
-          "line": 168,
+          "line": 182,
           "purpose": "Get the start command for active tool"
         },
         "getToolsRequiringWrapper": {
-          "line": 176,
+          "line": 190,
           "purpose": "Get all tools that require wrapper scripts"
         },
         "getExecutableCommand": {
-          "line": 188,
+          "line": 202,
           "params": [
             "toolId",
             "projectPath"
@@ -3202,7 +3202,7 @@
           "purpose": "Returns wrapper path if exists in project, otherwise original command"
         },
         "getActiveToolCommand": {
-          "line": 216,
+          "line": 230,
           "params": [
             "projectPath"
           ],
